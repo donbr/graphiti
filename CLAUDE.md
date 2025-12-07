@@ -181,3 +181,74 @@ When working with the MCP server, follow the patterns established in `mcp_server
 - Use specific entity type filters (`Preference`, `Procedure`, `Requirement`)
 - Store new information immediately using `add_memory`
 - Follow discovered procedures and respect established preferences
+
+## Git Workflow Requirements
+
+### ⚠️ CRITICAL: Remote Repository Rules ⚠️
+
+**THIS REPOSITORY IS A FORK OF getzep/graphiti**
+
+```
+origin = donbr/graphiti (YOUR fork - the ONLY remote)
+```
+
+**The upstream remote has been removed to prevent accidental pushes to getzep/graphiti.**
+
+**BEFORE ANY `git push` or `gh pr create` COMMAND:**
+1. Run `git remote -v` to verify only `origin` exists
+2. If `upstream` or any other remote exists pointing to getzep, DO NOT proceed - ask user first
+
+**BEFORE ANY `gh pr create` COMMAND:**
+1. The `gh` CLI creates PRs under THE USER'S GitHub account, not Claude's
+2. Any mistakes with PRs reflect on THE USER, not on Claude
+3. ALWAYS specify `--repo donbr/graphiti` to ensure PR goes to the correct repo
+4. NEVER create PRs against getzep/graphiti without EXPLICIT user permission
+5. By default, `gh pr create` may try to create PRs against the parent fork (getzep/graphiti) - ALWAYS use `--repo donbr/graphiti` to prevent this
+
+### Branch Strategy
+
+- **NEVER push directly to `main` branch** - All changes require feature branches and pull requests
+- **NEVER push to upstream (`getzep/graphiti`)** - Only push to origin (`donbr/graphiti`)
+- **NEVER create PRs against upstream** - PRs stay within the fork unless explicitly requested
+- Use descriptive branch names: `feature/description`, `fix/description`, `docs/description`
+
+### Development Process
+
+1. **Create a feature branch** before making any code changes:
+   ```bash
+   git checkout -b feature/my-feature-name
+   ```
+
+2. **Test-Driven Development (TDD)** is required for:
+   - All new features
+   - All bug fixes
+   - Write tests first, then implement the code to pass them
+
+3. **Pull Request workflow**:
+   ```bash
+   # FIRST: Verify remotes
+   git remote -v
+
+   # Push to YOUR fork (origin), never upstream
+   git push -u origin feature/my-feature-name
+
+   # Create PR ONLY within the fork (donbr/graphiti)
+   # ALWAYS use --repo to be explicit
+   gh pr create --repo donbr/graphiti --title "feat: Description" --body "Summary of changes"
+   ```
+
+4. **Verify before committing**:
+   - Run `make format` to format code
+   - Run `make lint` to check for issues
+   - Run `make test` to ensure tests pass
+   - Test locally with `fastmcp inspect` and `fastmcp dev` for MCP server changes
+
+### What NOT to do
+
+- ❌ Do NOT commit directly to main
+- ❌ Do NOT push to upstream (getzep/graphiti)
+- ❌ Do NOT create PRs against upstream without explicit permission
+- ❌ Do NOT use `gh pr create` without `--repo donbr/graphiti`
+- ❌ Do NOT skip tests for "quick fixes"
+- ❌ Do NOT commit .env files with real API keys
+- ❌ Do NOT forget: gh CLI actions appear as THE USER, not as Claude
